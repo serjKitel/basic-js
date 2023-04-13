@@ -20,13 +20,70 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(isDirect = true) {
+    this.isDirect = isDirect;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  encrypt(message, key) {
+    if (!message || !key) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const messageUpperCase = message.toUpperCase();
+    const keyUpperCase = key.toUpperCase();
+
+    let encryptedString = '';
+
+    for (let i = 0, j = 0; i < messageUpperCase.length; i++) {
+      const currentChar = messageUpperCase[i];
+      if (alphabet.includes(currentChar)) {
+        const messageCharCode = alphabet.indexOf(currentChar);
+        const keyCharCode = alphabet.indexOf(keyUpperCase[j % keyUpperCase.length]);
+        const encryptedCharCode = (messageCharCode + keyCharCode) % alphabet.length;
+        encryptedString += alphabet[encryptedCharCode];
+        j++;
+      } else {
+        encryptedString += currentChar;
+      }
+    }
+
+    if (!this.isDirect) {
+      return encryptedString.split('').reverse().join('');
+    }
+
+    return encryptedString;
+  }
+
+  decrypt(encryptedMessage, key) {
+    if (!encryptedMessage || !key) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const encryptedMessageUpperCase = encryptedMessage.toUpperCase();
+    const keyUpperCase = key.toUpperCase();
+
+    let decryptedString = '';
+
+    for (let i = 0, j = 0; i < encryptedMessageUpperCase.length; i++) {
+      const currentChar = encryptedMessageUpperCase[i];
+      if (alphabet.includes(currentChar)) {
+        const encryptedCharCode = alphabet.indexOf(currentChar);
+        const keyCharCode = alphabet.indexOf(keyUpperCase[j % keyUpperCase.length]);
+        const messageCharCode = (encryptedCharCode + alphabet.length - keyCharCode) % alphabet.length;
+        decryptedString += alphabet[messageCharCode];
+        j++;
+      } else {
+        decryptedString += currentChar;
+      }
+    }
+
+    if (!this.isDirect) {
+      return decryptedString.split('').reverse().join('');
+    }
+
+    return decryptedString;
   }
 }
 
